@@ -2,6 +2,7 @@ INTERRUPTED.pth
 __pycache__/*
 data/imgs_/*
 data/masks_/*
+data/training_data/*
 runs/*
 !runs/.gitkeep
 !checkpoints/.gitkeep
@@ -9,3 +10,4 @@ README.md
 submit.py
 .ipynb_checkpoints/*
 .idea/*
+unet/__pycache__/*

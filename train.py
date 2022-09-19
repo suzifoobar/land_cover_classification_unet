@@ -24,11 +24,12 @@ torch.autograd.set_detect_anomaly(True)
 dir_img = 'data/img_subset/'
 dir_mask = 'data/masks_subset/'
 
-## Comment/Uncomment to toggle subset for training
+# Comment/Uncomment to toggle subset for training
 # dir_img = 'data/training_data/images'
 # dir_mask = 'data/training_data/masks'
 
 dir_checkpoint = 'checkpoints/'
+
 
 def train_net(net,
               device,
@@ -42,9 +43,9 @@ def train_net(net,
     dataset = BasicDataset(dir_img, dir_mask, img_scale)
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
-    train, val = random_split(dataset, [n_train, n_val],generator=torch.Generator().manual_seed(42))
-    train_loader = DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
-    val_loader = DataLoader(val, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory=True, drop_last=True)
+    train, val = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(42))
+    train_loader = DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
+    val_loader = DataLoader(val, batch_size=batch_size, shuffle=False, num_workers=2, pin_memory=True, drop_last=True)
 
     writer = SummaryWriter(comment=f'LR_{lr}_BS_{batch_size}_SCALE_{img_scale}')
     global_step = 0
@@ -192,10 +193,11 @@ def get_args():
 
     return parser.parse_args()
 
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
     args = get_args()
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
     logging.info(f'Using device {device}')
 
@@ -218,7 +220,7 @@ if __name__ == '__main__':
         )
         logging.info(f'Model loaded from {args.load}')
 
-    net.to(device=device)
+    net = net.to(device=device)
     # faster convolutions, but more memory
     # cudnn.benchmark = True
 
